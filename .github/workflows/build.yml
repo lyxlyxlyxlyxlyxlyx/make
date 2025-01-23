@@ -13,18 +13,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt install -y git tar build-essential cmake
-
-      - name: Install musl-libc
-        run: |
-          sudo apt install -y musl-dev musl-tools
+          sudo apt-get install -y git tar build-essential cmake libssl-dev uuid-dev linux-libc-dev
 
       - name: Clone and build static libuv
         run: |
           git clone https://github.com/libuv/libuv.git
           cd libuv
           sh autogen.sh
-          ./configure --enable-static --disable-shared CC=musl-gcc
+          ./configure --enable-static --disable-shared
           make -j$(nproc)
           sudo make install
 
@@ -32,7 +28,7 @@ jobs:
         run: |
           git clone https://github.com/openssl/openssl.git
           cd openssl
-          ./config no-shared --prefix=/usr/local/ssl --openssldir=/usr/local/ssl CC=musl-gcc
+          ./config no-shared --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
           make -j$(nproc)
           sudo make install
 
