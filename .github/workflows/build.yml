@@ -13,12 +13,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt install -y git build-essential cmake
+          sudo apt-get install -y git build-essential cmake
 
       - name: Install static libraries
         run: |
-          sudo apt install -y libuv1-dev uuid-dev libssl-dev
-          sudo apt install -y libuv1-static libssl-static
+          sudo apt-get install -y libuv1-dev uuid-dev libssl-dev
+          sudo apt-get install -y libuv1-static libssl-static
 
       - name: Clone xmrig-proxy repository
         run: |
