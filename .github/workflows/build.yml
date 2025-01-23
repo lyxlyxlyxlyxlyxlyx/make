@@ -1,10 +1,6 @@
 name: Build xmrig-proxy
 
-on:
-  push:
-    branches:
-      - main  # 触发的分支
-  workflow_dispatch:  # 手动触发
+on: workflow_dispatch
 
 jobs:
   build:
@@ -17,17 +13,23 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt install -y git build-essential cmake libuv1-dev uuid-dev libssl-dev
+          sudo apt install -y git build-essential cmake libuv1-dev uuid-dev
 
       - name: Clone xmrig-proxy repository
         run: |
           git clone https://github.com/C3Pool/xmrig-proxy.git
 
+      - name: Clone xmrig-deps repository
+        run: |
+          git clone --depth 1 https://github.com/xmrig/xmrig-deps.git
+          cd xmrig-deps
+          ./build.sh
+
       - name: Build xmrig-proxy with static linking
         run: |
           mkdir xmrig-proxy/build
           cd xmrig-proxy/build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC=ON -DWITH_TLS=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC=ON -DXMRIG_DEPS=../../xmrig-deps
           make -j$(nproc)
 
       - name: Archive xmrig-proxy binary
