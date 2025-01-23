@@ -13,12 +13,25 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git build-essential cmake
+          sudo apt install -y git build-essential cmake libssl-dev uuid-dev
 
-      - name: Install static libraries
+      - name: Clone and build static libuv
         run: |
-          sudo apt-get install -y libuv1-dev uuid-dev libssl-dev
-          sudo apt-get install -y libuv1-static libssl-static
+          git clone https://github.com/libuv/libuv.git
+          cd libuv
+          sh autogen.sh
+          ./configure --enable-static --disable-shared
+          make -j$(nproc)
+          sudo make install
+
+      - name: Clone and build static OpenSSL
+        run: |
+          git clone https://www.openssl.org/source/openssl-3.0.13.tar.gz -o openssl-3.0.13.tar.gz
+          tar -xzvf openssl-3.0.13.tar.gz
+          cd openssl-3.0.13
+          ./config no-shared --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
+          make -j$(nproc)
+          sudo make install
 
       - name: Clone xmrig-proxy repository
         run: |
@@ -28,7 +41,10 @@ jobs:
         run: |
           mkdir xmrig-proxy/build
           cd xmrig-proxy/build
-          cmake .. -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+          cmake .. \
+            -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -DCMAKE_PREFIX_PATH=/usr/local/ssl
           make -j$(nproc)
 
       - name: Archive xmrig-proxy binary
