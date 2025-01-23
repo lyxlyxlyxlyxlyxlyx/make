@@ -1,0 +1,41 @@
+name: Build xmrig-proxy
+
+on:
+  push:
+    branches:
+      - main  # 触发的分支
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install -y git build-essential cmake libuv1-dev uuid-dev libssl-dev
+
+      - name: Clone xmrig-proxy repository
+        run: |
+          git clone https://github.com/C3Pool/xmrig-proxy.git
+
+      - name: Build xmrig-proxy
+        run: |
+          mkdir xmrig-proxy/build
+          cd xmrig-proxy/build
+          cmake ..
+          make -j$(nproc)
+
+      - name: Archive xmrig-proxy binary
+        run: |
+          tar -czvf xmrig-proxy.tar.gz xmrig-proxy/build/xmrig-proxy
+
+      - name: Upload xmrig-proxy binary as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: xmrig-proxy
+          path: xmrig-proxy.tar.gz
