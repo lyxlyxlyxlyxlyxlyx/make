@@ -26,9 +26,8 @@ jobs:
 
       - name: Download and build static OpenSSL
         run: |
-          curl https://www.openssl.org/source/openssl-3.0.13.tar.gz -o openssl-3.0.13.tar.gz
-          tar -zxvf openssl-3.0.13.tar.gz
-          cd openssl-3.0.13
+          git clone https://github.com/openssl/openssl.git
+          cd openssl
           ./config no-shared --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
           make -j$(nproc)
           sudo make install
