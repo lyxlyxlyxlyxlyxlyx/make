@@ -24,9 +24,9 @@ jobs:
           make -j$(nproc)
           sudo make install
 
-      - name: Clone and build static OpenSSL
+      - name: Download and build static OpenSSL
         run: |
-          git clone https://www.openssl.org/source/openssl-3.0.13.tar.gz -o openssl-3.0.13.tar.gz
+          curl https://www.openssl.org/source/openssl-3.0.13.tar.gz -o openssl-3.0.13.tar.gz
           tar -xzvf openssl-3.0.13.tar.gz
           cd openssl-3.0.13
           ./config no-shared --prefix=/usr/local/ssl --openssldir=/usr/local/ssl
