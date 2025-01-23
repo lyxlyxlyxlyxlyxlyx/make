@@ -23,11 +23,11 @@ jobs:
         run: |
           git clone https://github.com/C3Pool/xmrig-proxy.git
 
-      - name: Build xmrig-proxy
+      - name: Build xmrig-proxy with static linking
         run: |
           mkdir xmrig-proxy/build
           cd xmrig-proxy/build
-          cmake ..
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSTATIC=ON -DWITH_TLS=ON
           make -j$(nproc)
 
       - name: Archive xmrig-proxy binary
