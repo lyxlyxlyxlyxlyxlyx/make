@@ -11,21 +11,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up MSYS2 environment
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-
       - name: Install dependencies
         run: |
-          bash -lc "pacman -Syu --noconfirm"
-          bash -lc "pacman -S --noconfirm base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake"
+          choco install cmake --confirm
+          choco install git --confirm
+          choco install visualstudio2022community --confirm --params "/AddProductFeatures:'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' /AddProductFeatures:'Microsoft.VisualStudio.Component.VC.CLI.Support'"
 
-      - name: Download XMRig dependencies
+      - name: Clone XMRig dependencies
         run: |
-          mkdir -p c:/xmrig-deps
-          curl -L https://github.com/xmrig/xmrig-deps/releases/latest/download/xmrig-deps.zip -o c:/xmrig-deps/xmrig-deps.zip
-          unzip c:/xmrig-deps/xmrig-deps.zip -d c:/xmrig-deps
+          git clone https://github.com/xmrig/xmrig-deps.git c:/xmrig-deps
+          cd c:/xmrig-deps
+          git submodule update --init --recursive
 
       - name: Clone XMRig
         run: |
@@ -43,7 +39,7 @@ jobs:
         run: |
           cd xmrig
           mkdir build && cd build
-          cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=ON -D XMRIG_DEPS=c:/xmrig-deps/gcc/x64 ..
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DXMRIG_DEPS=c:\xmrig-deps\msvc2019\x64 -D CMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
       - name: Archive Windows build
@@ -69,7 +65,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git build-essential cmake automake libtool autoconf libhwloc-dev
+          sudo apt-get install -y git build-essential cmake automake libtool autoconf libhwloc-dev libuv1-dev
 
       - name: Clone XMRig
         run: |
