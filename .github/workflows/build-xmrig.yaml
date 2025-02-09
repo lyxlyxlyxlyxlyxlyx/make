@@ -11,12 +11,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          choco install cmake --confirm
-          choco install git --confirm
-          choco install visualstudio2022community --confirm --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.CLI.Support --source="'https://community.chocolatey.org/api/v2/'" --pre
-
       - name: Clone XMRig dependencies
         run: |
           git clone https://github.com/xmrig/xmrig-deps.git c:/xmrig-deps
@@ -39,20 +33,23 @@ jobs:
         run: |
           cd xmrig
           mkdir build && cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DXMRIG_DEPS=c:\xmrig-deps\msvc2019\x64 -D CMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
+          cmake .. -G "MinGW Makefiles" -DXMRIG_DEPS=c:\xmrig-deps\gcc\x64
+          make -j$(nproc)
 
       - name: Archive Windows build
         run: |
           cd xmrig/build
-          tar -czvf xmrig-windows.tar.gz xmrig.exe
+          copy src\config.json .
+          copy bin\WinRing0\WinRing0x64.sys .
+          copy scripts\*.cmd .
+          7z a -tzip -mx xmrig-windows.zip xmrig.exe config.json WinRing0x64.sys *.cmd
         shell: bash
 
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
           name: XMRig-Windows
-          path: xmrig/build/xmrig-windows.tar.gz
+          path: xmrig/build/xmrig-windows.zip
 
   build-linux:
     name: Build XMRig for Linux
@@ -94,11 +91,14 @@ jobs:
       - name: Archive Linux build
         run: |
           cd xmrig/build
-          tar -czvf xmrig-linux.tar.gz xmrig
+          copy src\config.json .
+          copy scripts\enable_1gb_pages.sh
+          copy scripts\randomx_boost.sh
+          7z a -tzip -mx xmrig-linux.zip xmrig.exe config.json enable_1gb_pages.sh randomx_boost.sh
         shell: bash
 
       - name: Upload Linux build
         uses: actions/upload-artifact@v4
         with:
           name: XMRig-Linux
-          path: xmrig/build/xmrig-linux.tar.gz
+          path: xmrig/build/xmrig-linux.zip
