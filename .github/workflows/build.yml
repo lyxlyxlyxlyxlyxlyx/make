@@ -51,7 +51,7 @@ jobs:
           tar -czvf xmrig-proxy.tar.gz xmrig-proxy/build/xmrig-proxy
 
       - name: Upload xmrig-proxy binary as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: xmrig-proxy
           path: xmrig-proxy.tar.gz
