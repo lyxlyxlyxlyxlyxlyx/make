@@ -39,9 +39,9 @@ jobs:
       - name: Archive Windows build
         run: |
           cd xmrig/build
-          cp src\config.json .
-          cp bin\WinRing0\WinRing0x64.sys .
-          cp scripts\*.cmd .
+          cp src/config.json .
+          cp bin/WinRing0/WinRing0x64.sys .
+          cp scripts/*.cmd .
           7z a -tzip -mx xmrig-windows.zip xmrig.exe config.json WinRing0x64.sys *.cmd
         shell: bash
 
@@ -91,9 +91,9 @@ jobs:
       - name: Archive Linux build
         run: |
           cd xmrig/build
-          cp src\config.json .
-          cp scripts\enable_1gb_pages.sh
-          cp scripts\randomx_boost.sh
+          cp src/config.json .
+          cp scripts/enable_1gb_pages.sh
+          cp scripts/randomx_boost.sh
           7z a -tzip -mx xmrig-linux.zip xmrig.exe config.json enable_1gb_pages.sh randomx_boost.sh
         shell: bash
 
