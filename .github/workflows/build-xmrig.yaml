@@ -14,12 +14,12 @@ jobs:
       - name: Set up MSYS2 environment
         uses: msys2/setup-msys2@v2
         with:
-          msystem: mingw64  # 使用64位MinGW环境
+          msystem: mingw64
 
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+          bash -lc "pacman -Syu --noconfirm"
+          bash -lc "pacman -S --noconfirm base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake"
 
       - name: Download XMRig dependencies
         run: |
@@ -76,6 +76,7 @@ jobs:
           git clone https://github.com/xmrig/xmrig.git
           cd xmrig
           git submodule update --init --recursive
+          mkdir -p build  # 确保build目录存在
 
       - name: Modify donate.h
         run: |
