@@ -69,4 +69,40 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git build-essential cmake autom
+          sudo apt-get install -y git build-essential cmake automake libtool autoconf libhwloc-dev
+
+      - name: Clone XMRig
+        run: |
+          git clone https://github.com/xmrig/xmrig.git
+          cd xmrig
+          git submodule update --init --recursive
+          mkdir -p build  # 确保build目录存在
+
+      - name: Modify donate.h
+        run: |
+          cd xmrig/src
+          sed -i 's/constexpr const int kDefaultDonateLevel = 1;/constexpr const int kDefaultDonateLevel = 0;/g' donate.h
+          sed -i 's/constexpr const int kMinimumDonateLevel = 1;/constexpr const int kMinimumDonateLevel = 0;/g' donate.h
+
+      - name: Build dependencies
+        run: |
+          cd xmrig/scripts
+          ./build_deps.sh
+
+      - name: Build XMRig for Linux with static libraries
+        run: |
+          cd xmrig/build
+          cmake .. -DXMRIG_DEPS=../../scripts/deps -D CMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+
+      - name: Archive Linux build
+        run: |
+          cd xmrig/build
+          tar -czvf xmrig-linux.tar.gz xmrig
+        shell: bash
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: XMRig-Linux
+          path: xmrig/build/xmrig-linux.tar.gz
