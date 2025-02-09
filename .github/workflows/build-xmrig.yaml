@@ -1,0 +1,108 @@
+name: Build XMRig
+
+on:
+  push: workflow_dispatch
+
+jobs:
+  build-windows:
+    name: Build XMRig for Windows
+    runs-on: windows-latest  # 使用最新的Windows环境
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up MSYS2 environment
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64  # 使用64位MinGW环境
+
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+
+      - name: Download XMRig dependencies
+        run: |
+          mkdir -p c:/xmrig-deps
+          curl -L https://github.com/xmrig/xmrig-deps/releases/latest/download/xmrig-deps.zip -o c:/xmrig-deps/xmrig-deps.zip
+          unzip c:/xmrig-deps/xmrig-deps.zip -d c:/xmrig-deps
+
+      - name: Clone XMRig
+        run: |
+          git clone https://github.com/xmrig/xmrig.git
+          cd xmrig
+          git submodule update --init --recursive
+
+      - name: Modify donate.h
+        run: |
+          cd xmrig/src
+          sed -i 's/constexpr const int kDefaultDonateLevel = 1;/constexpr const int kDefaultDonateLevel = 0;/g' donate.h
+          sed -i 's/constexpr const int kMinimumDonateLevel = 1;/constexpr const int kMinimumDonateLevel = 0;/g' donate.h
+
+      - name: Build XMRig for Windows with static libraries
+        run: |
+          cd xmrig
+          mkdir build && cd build
+          cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=ON -D XMRIG_DEPS=c:/xmrig-deps/gcc/x64 ..
+          cmake --build . --config Release
+
+      - name: Archive Windows build
+        run: |
+          cd xmrig/build
+          tar -czvf xmrig-windows.tar.gz xmrig.exe
+        shell: bash
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v3
+        with:
+          name: XMRig-Windows
+          path: xmrig/build/xmrig-windows.tar.gz
+
+  build-linux:
+    name: Build XMRig for Linux
+    runs-on: ubuntu-latest  # 使用最新的Ubuntu环境
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git build-essential cmake automake libtool autoconf
+
+      - name: Clone XMRig
+        run: |
+          git clone https://github.com/xmrig/xmrig.git
+          cd xmrig
+          git submodule update --init --recursive
+
+      - name: Modify donate.h
+        run: |
+          cd xmrig/src
+          sed -i 's/constexpr const int kDefaultDonateLevel = 1;/constexpr const int kDefaultDonateLevel = 0;/g' donate.h
+          sed -i 's/constexpr const int kMinimumDonateLevel = 1;/constexpr const int kMinimumDonateLevel = 0;/g' donate.h
+
+      - name: Build dependencies
+        run: |
+          cd xmrig/scripts
+          ./build_deps.sh
+
+      - name: Build XMRig for Linux with static libraries
+        run: |
+          cd xmrig/build
+          cmake .. -DXMRIG_DEPS=../../scripts/deps -D CMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+
+      - name: Archive Linux build
+        run: |
+          cd xmrig/build
+          tar -czvf xmrig-linux.tar.gz xmrig
+        shell: bash
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: XMRig-Linux
+          path: xmrig/build/xmrig-linux.tar.gz
