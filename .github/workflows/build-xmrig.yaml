@@ -53,7 +53,7 @@ jobs:
         shell: bash
 
       - name: Upload Windows build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: XMRig-Windows
           path: xmrig/build/xmrig-windows.tar.gz
