@@ -87,7 +87,7 @@ jobs:
         run: |
           cd xmrig/build
           cmake .. -DXMRIG_DEPS=../../scripts/deps -D CMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
+          make -j$(nproc)
 
       - name: Archive Linux build
         run: |
