@@ -39,9 +39,9 @@ jobs:
       - name: Archive Windows build
         run: |
           cd xmrig/build
-          copy src\config.json .
-          copy bin\WinRing0\WinRing0x64.sys .
-          copy scripts\*.cmd .
+          cp src\config.json .
+          cp bin\WinRing0\WinRing0x64.sys .
+          cp scripts\*.cmd .
           7z a -tzip -mx xmrig-windows.zip xmrig.exe config.json WinRing0x64.sys *.cmd
         shell: bash
 
