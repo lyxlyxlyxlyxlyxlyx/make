@@ -33,7 +33,7 @@ jobs:
         run: |
           cd xmrig
           mkdir build && cd build
-          cmake .. -G "MinGW Makefiles" -DXMRIG_DEPS=c:\xmrig-deps\gcc\x64
+          cmake  .. -G "Unix Makefiles" -DXMRIG_DEPS=c:/xmrig-deps/gcc/x64
           make -j2
 
       - name: Archive Windows build
@@ -91,9 +91,9 @@ jobs:
       - name: Archive Linux build
         run: |
           cd xmrig/build
-          copy src\config.json .
-          copy scripts\enable_1gb_pages.sh
-          copy scripts\randomx_boost.sh
+          cp src\config.json .
+          cp scripts\enable_1gb_pages.sh
+          cp scripts\randomx_boost.sh
           7z a -tzip -mx xmrig-linux.zip xmrig.exe config.json enable_1gb_pages.sh randomx_boost.sh
         shell: bash
 
