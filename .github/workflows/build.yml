@@ -34,7 +34,7 @@ jobs:
 
       - name: Clone xmrig-proxy repository
         run: |
-          git clone https://github.com/C3Pool/xmrig-proxy.git
+          git clone https://github.com/xmrig/xmrig-proxy.git
 
       - name: Build xmrig-proxy with static linking
         run: |
