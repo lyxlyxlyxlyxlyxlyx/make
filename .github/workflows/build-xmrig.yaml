@@ -34,7 +34,8 @@ jobs:
           cd xmrig
           mkdir build && cd build
           cmake .. -G "MinGW Makefiles" -DXMRIG_DEPS=c:\xmrig-deps\gcc\x64
-          make -j$(nproc)
+          nproc=$(wmic CPU get NumberOfLogicalProcessors | tail -n +2 | head -n 1)
+          make -j${nproc}
 
       - name: Archive Windows build
         run: |
