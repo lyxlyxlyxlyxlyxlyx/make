@@ -15,7 +15,7 @@ jobs:
         run: |
           choco install cmake --confirm
           choco install git --confirm
-          choco install visualstudio2022community --confirm --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.CLI.Support
+          choco install visualstudio2022community --confirm --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.CLI.Support --source="'https://community.chocolatey.org/api/v2/'" --pre
 
       - name: Clone XMRig dependencies
         run: |
