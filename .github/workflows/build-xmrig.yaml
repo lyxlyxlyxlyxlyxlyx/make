@@ -92,8 +92,8 @@ jobs:
         run: |
           cd xmrig/build
           cp ../src/config.json .
-          cp ../scripts/enable_1gb_pages.sh
-          cp ../scripts/randomx_boost.sh
+          cp ../scripts/enable_1gb_pages.sh .
+          cp ../scripts/randomx_boost.sh .
           7z a -tzip -mx xmrig-linux.zip xmrig.exe config.json enable_1gb_pages.sh randomx_boost.sh
         shell: bash
 
